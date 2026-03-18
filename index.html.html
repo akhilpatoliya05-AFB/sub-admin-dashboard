@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Aambika — Semi-Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0f2f8;--white:#fff;--border:#e8ecf4;--border2:#d5dbe8;--shadow:0 2px 12px rgba(0,0,0,0.06);--shadow-lg:0 8px 32px rgba(0,0,0,0.08);--text:#1a1d2e;--text2:#5a6178;--text3:#8e95a9;--radius:16px;--radius-sm:10px;--brand:#e8520a;--brand-light:#fff4ee;--brand-gold:#f4a623;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--orange:#f59e0b;--purple:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#f0f2f8,#e8ecf4)}
+.login-box{background:var(--white);border-radius:var(--radius);padding:36px;width:100%;max-width:400px;box-shadow:var(--shadow-lg)}
+.login-logo{width:56px;height:56px;background:linear-gradient(135deg,#e8520a,#f4a623);border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;color:#fff;margin:0 auto 16px;box-shadow:0 4px 14px rgba(232,82,10,0.35)}
+.login-title{text-align:center;font-size:20px;font-weight:700;margin-bottom:4px}
+.login-sub{text-align:center;font-size:13px;color:var(--text3);margin-bottom:24px}
+.field{margin-bottom:16px}.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;font-size:14px;font-family:'Outfit',sans-serif;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;transition:border .2s}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
+.btn{width:100%;padding:14px;font-size:15px;font-weight:700;font-family:'Outfit',sans-serif;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-brand{background:linear-gradient(135deg,#e8520a,#f4a623);color:#fff;box-shadow:0 4px 14px rgba(232,82,10,0.3)}.btn-brand:active{transform:scale(0.98)}.btn-brand:disabled{opacity:0.5}
+.btn-outline{background:var(--white);border:1.5px solid var(--border);color:var(--text2)}.btn-outline:hover{border-color:var(--brand);color:var(--brand)}
+.login-err{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:10px;border-radius:8px;font-size:12px;margin-bottom:12px;display:none}
+/* APP LAYOUT */
+.app{display:none}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:0 1px 6px rgba(0,0,0,0.03)}
+.topbar-logo{width:36px;height:36px;background:linear-gradient(135deg,#e8520a,#f4a623);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;flex-shrink:0}
+.topbar-brand{font-size:16px;font-weight:700;flex:1}.topbar-brand span{font-size:11px;color:var(--text3);display:block;font-weight:400}
+.topbar-user{font-size:12px;color:var(--text2);text-align:right}.topbar-user strong{color:var(--text);display:block}
+.logout-btn{padding:6px 14px;font-size:11px;font-weight:600;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text2);cursor:pointer;font-family:'Outfit',sans-serif}
+/* TABS */
+.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);padding:0 16px;overflow-x:auto;gap:2px}
+.tab{padding:12px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .2s}
+.tab:hover{color:var(--text2)}.tab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+/* CONTENT */
+.content{padding:20px;max-width:1000px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+/* CARDS */
+.card{background:var(--white);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+.card-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card-title .icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0}
+/* FORM GRID */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}.fg-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;margin-top:12px}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);font-weight:600;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);background:#f8f9fd}
+.tbl td{font-size:12px;color:var(--text2);padding:10px 12px;border-bottom:1px solid var(--border)}
+.tbl td.mono{font-family:'JetBrains Mono',monospace;font-size:11px}
+.tbl td.bold{color:var(--text);font-weight:600}
+.tbl .total-row td{font-weight:700;color:var(--text);background:#f8f9fd;border-top:2px solid var(--border2)}
+.tbl input{width:100%;padding:8px;font-size:13px;font-family:'Outfit',sans-serif;border:1px solid var(--border);border-radius:6px;outline:none;background:var(--bg);text-align:right}.tbl input:focus{border-color:var(--brand)}
+/* STATUS BADGES */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600}
+.badge-green{background:#ecfdf5;color:#059669}.badge-red{background:#fef2f2;color:#dc2626}.badge-orange{background:#fffbeb;color:#d97706}
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--white);padding:14px 28px;border-radius:12px;box-shadow:var(--shadow-lg);border:1px solid var(--border);font-size:13px;font-weight:500;z-index:999;transition:all .3s;opacity:0}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-color:var(--green);color:var(--green)}.toast.error{border-color:var(--red);color:var(--red)}
+/* FILE UPLOAD */
+.file-drop{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:30px;text-align:center;color:var(--text3);cursor:pointer;transition:all .2s;background:var(--bg)}.file-drop:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-light)}
+.file-drop input{display:none}
+/* SUMMARY CARD */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.sum-card{background:var(--bg);border-radius:var(--radius-sm);padding:14px;text-align:center}.sum-card .sum-label{font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:600;margin-bottom:4px}.sum-card .sum-val{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace}
+/* TARGET ROW */
+.target-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}.target-row:last-child{border-bottom:none}
+.target-name{flex:1;font-size:13px;font-weight:500}.target-input{width:80px;padding:8px;font-size:13px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:6px;text-align:center;outline:none}.target-input:focus{border-color:var(--brand)}
+.target-unit{font-size:11px;color:var(--text3);width:30px}
+@media(max-width:600px){.fg,.fg-3{grid-template-columns:1fr}.tabs{padding:0 8px}.tab{padding:10px 12px;font-size:12px}.content{padding:14px}.card{padding:16px}.sum-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-wrap" id="loginScreen">
+<div class="login-box">
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAAA5ZDbSAAAeUElEQVR42u2ce3xdVZn3f89ae+9zz8mlSdr0fm9ToEAREIGkiICAI3ZIQZGPdxgVcZyZ13FGJY0zzuj46qCIg8rHy/vxnZGkyCuiXOTSlptcyrUNUtrSJk0vueckJ+ecvdd6nvePfRISLIpQBHR/P5+dc9+X9dtrref5rbUCRERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERES8WaCoCI5E+QnQumF6WbZtkPLHEgn8hkYIrSBgkwpfNwOrILhYW4gA8vv1I1K4iq3CJigA6OzrkI6WFgaRRAK/HmK2dCg01obl8qW3Gwj/ofJLzFrWlESmLjn1gzrj55588ud5AMHhftguojs6gI71xK9lLf9LF5jQ0h4KuqHZvrhWEYDaunfVl962drak65aabM0ySSTnOqnKao9Li510Kq49J5uMOQlXcTLmEDxHIeEAiWRsNObSiMfBWNKhHhA/T8XR7YUDe55+8Ctf3dbVdd9QWMMJN9zAev16spHAR4LWVoVNzQqbmhlE06pnfeqYunzTpSvQsLrRJuIn20RylbixpUims0hVQZJJaMeBqwmeI/AcIOYIYooRc4GEp5DwCCmPENdAwgXiGohphJ8rQBV9mLHh3piUbi8N9v33V85fcwcAFhFFgBzpppv+okTdMr3JrUVtevzdV51gMvXvkEzNKRzPHi2ZbA1S1RCtISygoABYY8mwkPEBa6HZkmYhRQApsFKA45A4DiEe00iniKoqPKqqilN1VQKV2YTEY1o0C8hCp5MOpTOALgHFkf6tI13dX2k79/iN4am2qra2No4E/sOqKjT9rqjZY96/0J9/0vlct/AMk2k4gZKVcyRVDSEN+EXQeAEo5IFSAfBLIGMhxoCsCTtKsRAIBAQIQUgB2gFIA9oDiMrFaqG0QSomtq7GxZKFlWrZ8hpqmFMFTVqs73PS1ZTJauUAOLBj58Zf/+fXPnpnx/dGjqTIf24Cl/vUFkHbC81v5pQvLA/mHn2BiVe/FxW1q5GdCxEBRvtBI/sZ+dyg8v0u+KVe+MVescU+UWovjedGURpmpeMHlbg5XTkrJ64l+D4opkXG2DEju2q9zIyYD66TdHUlsSyEm1lgvcRS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4EBQMLagWPaD7S5Y2zlc9J/bMaqfu6Zn9tCNB9+ahppbj5R3DDw+RbnmJB2vSJBOwoIgYiG2CDLjUBz0gbmHuLRHSfA0BbkdTPmt2b3/r7sPGJteSgScfpUTGiUd/EYX9YgKPFVkALh2dXbtKfXOFbVxOWeWp5JKMyCCgAWGBSLEYDCmLeGetJfDwRph5HyiA76Chd5fYOpix33moHEO7jI1/Y/k6/wn/Lp4d5CZCc4sAtmjAFnmuBmlSIX/KMXmwcwHwbZHid0LDvaSDXq0NbvI5rr0gWf2juG3A4dVajJI6pQwd37j9Kmvi8AT+SXCPpkB4O8XVM4/b67bXO3ImZkYH+2RzI8pqog7UJ4GVHll6MRpCADLBF/C7WBR4/mCi36Jjxzi1EBep/LDJlHoD2KJAyYR9AVJHpX44JiRfmO5PzB6N0xxn6B4QI8O5jLB84fSYztzOyfH4l/i8ltuKDe3mwA0v+5R7xtW4AnaW6BbGiHUNj3nO2fmzNpPzTVVgywNimhmfdzC85RjIU6Fp4q+BYYKFocCDyVA6tPxQ4PD4yZRMWNoazE+NsxVxQd323xn3+bxPy6fnCLipB/dKH9uQv7JBJ7abDc3QTXXQfRGWD6CRSkQotYNNPEPPifZvAlA3VQB8Zcg4usi8GGb8NAmpNre33/cTQBW1YXCbO+AbDjMOnxERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERES8afn/3AXpq2nS4GYAAAAASUVORK5CYII=" style="width:140px;height:140px;object-fit:contain;margin:0 auto 2px;display:block">
+  <div class="login-title">Semi-Admin Panel</div>
+  <div class="login-sub">Aambika Foods & Beverages — Plant Management</div>
+  <div class="login-err" id="loginErr"></div>
+  <div class="field"><label>Username</label><input type="text" id="loginUser" placeholder="Enter username"></div>
+  <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  <button class="btn btn-brand" onclick="doLogin()">Login →</button>
+</div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="appMain">
+<div class="topbar">
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAAA5ZDbSAAAeUElEQVR42u2ce3xdVZn3f89ae+9zz8mlSdr0fm9ToEAREIGkiICAI3ZIQZGPdxgVcZyZ13FGJY0zzuj46qCIg8rHy/vxnZGkyCuiXOTSlptcyrUNUtrSJk0vueckJ+ecvdd6nvePfRISLIpQBHR/P5+dc9+X9dtrref5rbUCRERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERES8WaCoCI5E+QnQumF6WbZtkPLHEgn8hkYIrSBgkwpfNwOrILhYW4gA8vv1I1K4iq3CJigA6OzrkI6WFgaRRAK/HmK2dCg01obl8qW3Gwj/ofJLzFrWlESmLjn1gzrj55588ud5AMHhftguojs6gI71xK9lLf9LF5jQ0h4KuqHZvrhWEYDaunfVl962drak65aabM0ySSTnOqnKao9Li510Kq49J5uMOQlXcTLmEDxHIeEAiWRsNObSiMfBWNKhHhA/T8XR7YUDe55+8Ctf3dbVdd9QWMMJN9zAev16spHAR4LWVoVNzQqbmhlE06pnfeqYunzTpSvQsLrRJuIn20RylbixpUims0hVQZJJaMeBqwmeI/AcIOYIYooRc4GEp5DwCCmPENdAwgXiGohphJ8rQBV9mLHh3piUbi8N9v33V85fcwcAFhFFgBzpppv+okTdMr3JrUVtevzdV51gMvXvkEzNKRzPHi2ZbA1S1RCtISygoABYY8mwkPEBa6HZkmYhRQApsFKA45A4DiEe00iniKoqPKqqilN1VQKV2YTEY1o0C8hCp5MOpTOALgHFkf6tI13dX2k79/iN4am2qra2No4E/sOqKjT9rqjZY96/0J9/0vlct/AMk2k4gZKVcyRVDSEN+EXQeAEo5IFSAfBLIGMhxoCsCTtKsRAIBAQIQUgB2gFIA9oDiMrFaqG0QSomtq7GxZKFlWrZ8hpqmFMFTVqs73PS1ZTJauUAOLBj58Zf/+fXPnpnx/dGjqTIf24Cl/vUFkHbC81v5pQvLA/mHn2BiVe/FxW1q5GdCxEBRvtBI/sZ+dyg8v0u+KVe+MVescU+UWovjedGURpmpeMHlbg5XTkrJ64l+D4opkXG2DEju2q9zIyYD66TdHUlsSyEm1lgvcRS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4EBQMLagWPaD7S5Y2zlc9J/bMaqfu6Zn9tCNB9+ahppbj5R3DDw+RbnmJB2vSJBOwoIgYiG2CDLjUBz0gbmHuLRHSfA0BbkdTPmt2b3/r7sPGJteSgScfpUTGiUd/EYX9YgKPFVkALh2dXbtKfXOFbVxOWeWp5JKMyCCgAWGBSLEYDCmLeGetJfDwRph5HyiA76Chd5fYOpix33moHEO7jI1/Y/k6/wn/Lp4d5CZCc4sAtmjAFnmuBmlSIX/KMXmwcwHwbZHid0LDvaSDXq0NbvI5rr0gWf2juG3A4dVajJI6pQwd37j9Kmvi8AT+SXCPpkB4O8XVM4/b67bXO3ImZkYH+2RzI8pqog7UJ4GVHll6MRpCADLBF/C7WBR4/mCi36Jjxzi1EBep/LDJlHoD2KJAyYR9AVJHpX44JiRfmO5PzB6N0xxn6B4QI8O5jLB84fSYztzOyfH4l/i8ltuKDe3mwA0v+5R7xtW4AnaW6BbGiHUNj3nO2fmzNpPzTVVgywNimhmfdzC85RjIU6Fp4q+BYYKFocCDyVA6tPxQ4PD4yZRMWNoazE+NsxVxQd323xn3+bxPy6fnCLipB/dKH9uQv7JBJ7abDc3QTXXQfRGWD6CRSkQotYNNPEPPifZvAlA3VQB8Zcg4usi8GGb8NAmpNre33/cTQBW1YXCbO+AbDjMOnxERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERES8afn/3AXpq2nS4GYAAAAASUVORK5CYII=" style="width:44px;height:44px;object-fit:contain;flex-shrink:0">
+  <div class="topbar-brand">Semi-Admin Panel<span>Aambika Foods & Beverages</span></div>
+  <div class="topbar-user"><strong id="dispUser">Admin</strong><span id="dispDate"></span></div>
+  <button class="logout-btn" onclick="doLogout()">Logout</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="setTab(0)">💰 CPC</div>
+  <div class="tab" onclick="setTab(1)">📊 Revenue</div>
+  <div class="tab" onclick="setTab(2)">⚡ Electricity</div>
+  <div class="tab" onclick="setTab(3)">💧 Water / WUR</div>
+  <div class="tab" onclick="setTab(4)">🎯 Targets</div>
+  <div class="tab" onclick="setTab(5)">📦 Inventory</div>
+  <div class="tab" onclick="setTab(6)">📈 P&L</div>
+  <div class="tab" onclick="setTab(7)">👤 Users</div>
+</div>
+
+<div class="content">
+
+<!-- PAGE 0: CPC MODULE -->
+<div class="page active" id="pg0">
+<div class="card">
+  <div class="card-title"><span class="icon" style="background:linear-gradient(135deg,#e8520a,#f4a623)">💰</span> CPC Module — Conversion Cost Per Case</div>
+  <p style="font-size:12px;color:var(--text3);margin-bottom:6px">Fixed costs entered once per month. Variable costs entered daily. Monthly CPC = (Fixed + Variable) ÷ Total Cases.</p>
+  <div class="fg" style="margin-bottom:16px">
+    <div class="field"><label>Month</label><input type="month" id="cpcMonth" onchange="setCpcDays();calcCPC()"></div>
+    <div class="field"><label>Days in Month</label><input type="number" id="cpcDays" readonly style="background:#e8ecf4;font-weight:700"></div>
+  </div>
+</div>
+
+<!-- FIXED COSTS -->
+<div class="card">
+  <div class="card-title" style="font-size:14px">🔒 Fixed Costs (Monthly — same every month)</div>
+  <p style="font-size:11px;color:var(--text3);margin-bottom:12px">Enter once. These auto-divide per day for daily CPC estimate.</p>
+  <table class="tbl" id="fixedTable">
+    <thead><tr><th>Cost Head</th><th style="width:150px;text-align:right">Monthly (₹)</th><th style="width:100px;text-align:right;color:var(--text3)">Per Day (₹)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr class="total-row"><td class="bold">TOTAL FIXED</td><td class="mono bold" id="fixedTotal" style="text-align:right">₹0</td><td class="mono" id="fixedPerDay" style="text-align:right;color:var(--text3)">₹0</td></tr></tfoot>
+  </table>
+</div>
+
+<!-- VARIABLE COSTS -->
+<div class="card">
+  <div class="card-title" style="font-size:14px">📊 Variable Costs (Monthly Total — changes every month)</div>
+  <p style="font-size:11px;color:var(--text3);margin-bottom:12px">Enter monthly total for each variable head. Some will auto-fetch from operator sheets in future.</p>
+  <table class="tbl" id="varTable">
+    <thead><tr><th>Cost Head</th><th style="width:150px;text-align:right">Monthly (₹)</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr class="total-row"><td class="bold">TOTAL VARIABLE</td><td class="mono bold" id="varTotal" style="text-align:right">₹0</td><td></td></tr></tfoot>
+  </table>
+</div>
+
+<!-- PRODUCTION & CPC RESULT -->
+<div class="card">
+  <div class="card-title" style="font-size:14px">📦 Production & CPC Result</div>
+  <div class="field"><label>Total Cases Produced This Month</label><input type="number" id="cpcCases" placeholder="Enter total or auto-fetched from Shift Incharge" oninput="calcCPC()"></div>
+  <div class="sum-grid" style="margin-top:16px">
+    <div class="sum-card"><div class="sum-label">Fixed Cost</div><div class="sum-val" id="sumFixed" style="color:var(--blue)">₹0</div></div>
+    <div class="sum-card"><div class="sum-label">Variable Cost</div><div class="sum-val" id="sumVar" style="color:var(--orange)">₹0</div></div>
+    <div class="sum-card"><div class="sum-label">Total Cost</div><div class="sum-val" id="sumTotal" style="color:var(--red)">₹0</div></div>
+    <div class="sum-card" style="background:var(--brand-light)"><div class="sum-label">CPC (₹/case)</div><div class="sum-val" id="sumCPC" style="color:var(--brand)">₹0.00</div></div>
+  </div>
+
+  <!-- Cost split visual -->
+  <div style="margin-top:16px">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">Cost Split — Where Money Goes</div>
+    <div id="costSplitBars"></div>
+  </div>
+
+  <!-- Insights -->
+  <div id="cpcInsights" style="margin-top:16px;background:var(--bg);border-radius:var(--radius-sm);padding:14px;font-size:12px;color:var(--text2);display:none"></div>
+
+  <div style="margin-top:16px"><button class="btn btn-brand" onclick="saveCPC()">💾 Save Monthly CPC</button></div>
+</div>
+</div>
+
+<!-- PAGE 1: REVENUE -->
+<div class="page" id="pg1">
+<div class="card">
+  <div class="card-title"><span class="icon" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">📊</span> Revenue Tracker — Conversion Rates</div>
+  <p style="font-size:12px;color:var(--text3);margin-bottom:16px">Set conversion rate per SKU — without incentive and with incentive. Revenue auto-calculates from production.</p>
+  <table class="tbl">
+    <thead><tr><th>SKU</th><th style="width:110px;text-align:right">Rate w/o Incentive (₹)</th><th style="width:110px;text-align:right">Rate w/ Incentive (₹)</th><th style="width:80px;text-align:right">Production</th><th style="width:110px;text-align:right">Revenue w/o (₹)</th><th style="width:110px;text-align:right">Revenue w/ (₹)</th></tr></thead>
+    <tbody id="revBody"></tbody>
+    <tfoot><tr class="total-row"><td class="bold">TOTAL</td><td></td><td></td><td class="mono bold" id="revTotalProd" style="text-align:right">0</td><td class="mono bold" id="revTotalWO" style="text-align:right;color:var(--blue)">₹0</td><td class="mono bold" id="revTotalW" style="text-align:right;color:var(--green)">₹0</td></tr></tfoot>
+  </table>
+  <div style="margin-top:16px"><button class="btn btn-brand" onclick="saveRevenue()">💾 Save Rates</button></div>
+</div>
+</div>
+
+<!-- PAGE 2: ELECTRICITY -->
+<div class="page" id="pg2">
+<div class="card">
+  <div class="card-title"><span class="icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">⚡</span> Daily Electricity Meter Reading</div>
+  <div class="field" style="margin-bottom:16px"><label>Date</label><input type="date" id="elecDate"></div>
+  <div class="fg" style="margin-bottom:16px">
+    <div class="field"><label>Opening Reading (kWh)</label><input type="number" step="0.01" id="elecOpen" placeholder="Meter start" oninput="calcElec()"></div>
+    <div class="field"><label>Closing Reading (kWh)</label><input type="number" step="0.01" id="elecClose" placeholder="Meter end" oninput="calcElec()"></div>
+  </div>
+  <div class="field" style="margin-bottom:16px"><label>Unit Rate (₹/kWh)</label><input type="number" step="0.01" id="elecRate" placeholder="Enter rate per unit" oninput="calcElec()" value=""></div>
+  <div class="sum-grid">
+    <div class="sum-card"><div class="sum-label">Units Consumed</div><div class="sum-val" id="elecUnits" style="color:var(--blue)">0</div></div>
+    <div class="sum-card"><div class="sum-label">Rate (₹/unit)</div><div class="sum-val" id="elecRateDisp" style="color:var(--text2)">₹0</div></div>
+    <div class="sum-card"><div class="sum-label">Est. Cost</div><div class="sum-val" id="elecCost" style="color:var(--brand)">₹0</div></div>
+  </div>
+  <button class="btn btn-brand" onclick="saveElec()">💾 Save Reading</button>
+</div>
+</div>
+
+<!-- PAGE 3: WATER USAGE RATIO -->
+<div class="page" id="pg3">
+
+<div class="card">
+  <div class="card-title"><span class="icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">💧</span> Daily WUR Tracker</div>
+  <p style="font-size:12px;color:var(--text3);margin-bottom:4px">Plant Day = 7:00 AM → 7:00 AM (next day). WUR = Total Water Drawn ÷ Product Water.</p>
+  <div class="fg" style="margin-bottom:12px">
+    <div class="field"><label>Plant Day (7AM → 7AM)</label><input type="date" id="wurDate"></div>
+    <div class="field" style="display:flex;align-items:flex-end;gap:8px"><button class="btn btn-outline" style="width:auto;padding:10px 16px;font-size:12px" onclick="downloadWURPDF()">📥 Download PDF</button></div>
+  </div>
+</div>
+
+<!-- WATER DRAWN -->
+<div class="card">
+  <div class="card-title" style="font-size:14px">🚰 Water Drawn — Source Meter Readings (7AM → 7AM)</div>
+  <div style="overflow-x:auto">
+  <table class="tbl">
+    <thead><tr><th>Source</th><th style="width:120px;text-align:right">Opening (7AM)</th><th style="width:120px;text-align:right">Closing (7AM+1)</th><th style="width:110px;text-align:right">Consumed (KL)</th></tr></thead>
+    <tbody>
+      <tr><td class="bold">Borewell 1</td><td><input type="number" step="0.01" class="ws" data-s="bw1" oninput="calcWUR()" placeholder="0"></td><td><input type="number" step="0.01" class="wsc" data-s="bw1" oninput="calcWUR()" placeholder="0"></td><td class="mono bold" style="text-align:right" id="wc_bw1">0</td></tr>
+      <tr><td class="bold">Borewell 2</td><td><input type="number" step="0.01" class="ws" data-s="bw2" oninput="calcWUR()" placeholder="0"></td><td><input type="number" step="0.01" class="wsc" data-s="bw2" oninput="calcWUR()" placeholder="0"></td><td class="mono bold" style="text-align:right" id="wc_bw2">0</td></tr>
+      <tr><td class="bold">Borewell 3</td><td><input type="number" step="0.01" class="ws" data-s="bw3" oninput="calcWUR()" placeholder="0"></td><td><input type="number" step="0.01" class="wsc" data-s="bw3" oninput="calcWUR()" placeholder="0"></td><td class="mono bold" style="text-align:right" id="wc_bw3">0</td></tr>
+      <tr><td class="bold">TMC / Municipal</td><td><input type="number" step="0.01" class="ws" data-s="tmc" oninput="calcWUR()" placeholder="0"></td><td><input type="number" step="0.01" class="wsc" data-s="tmc" oninput="calcWUR()" placeholder="0"></td><td class="mono bold" style="text-align:right" id="wc_tmc">0</td></tr>
+      <tr><td class="bold">Tanker Water (10 KL each)</td><td colspan="2"><div style="display:flex;align-items:center;gap:8px"><input type="number" id="wTankerCount" oninput="calcWUR()" placeholder="No. of tankers" style="flex:1;text-align:right"><span style="font-size:12px;color:var(--text3);white-space:nowrap">× 10 KL =</span></div></td><td class="mono bold" style="text-align:right" id="wc_tanker">0</td></tr>
+    </tbody>
+    <tfoot><tr class="total-row"><td>TOTAL WATER DRAWN (A)</td><td colspan="2"></td><td class="mono bold" id="wTotalDrawn" style="text-align:right;color:var(--blue)">0 KL</td></tr></tfoot>
+  </table>
+  </div>
+</div>
+
+<!-- TANK BALANCE -->
+<div class="card">
+  <div class="card-title" style="font-size:14px">🪣 RCC Tank Balance</div>
+  <div class="fg">
+    <div class="field"><label>Start of Day — 7AM (KL)</label><input type="number" step="0.01" id="wTankStart" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label>End of Day — 7AM Next Day (KL)</label><input type="number" step="0.01" id="wTankEnd" oninput="calcWUR()" placeholder="0"></div>
+  </div>
+</div>
+
+<!-- RO1 + RO2 + REJECT RO + BACKWASH -->
+<div class="card">
+  <div class="card-title" style="font-size:14px">💎 RO Plant — RO1 & RO2 + Reject RO + Backwash</div>
+  <p style="font-size:11px;color:var(--text3);margin-bottom:10px">Enter meter readings. RO Permeate = 75% of Feed (auto). Reject RO Recovery = 60% of Reject RO Feed (auto).</p>
+
+  <!-- RO1 -->
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--blue)">RO 1</div>
+  <div class="fg-3" style="margin-bottom:6px">
+    <div class="field"><label>RO1 Feed Open (7AM)</label><input type="number" step="0.01" id="ro1FO" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label>RO1 Feed Close (7AM+1)</label><input type="number" step="0.01" id="ro1FC" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label style="color:var(--text3)">RO1 Feed (auto KL)</label><input type="text" id="ro1Feed" readonly style="background:#e8ecf4;font-weight:700;text-align:right" value="0"></div>
+  </div>
+  <div class="fg-3" style="margin-bottom:14px">
+    <div class="field"><label style="color:var(--green)">RO1 Permeate (75%)</label><input type="text" id="ro1Perm" readonly style="background:#ecfdf5;font-weight:700;text-align:right;color:var(--green)" value="0"></div>
+    <div class="field"><label style="color:var(--red)">RO1 Reject (25%)</label><input type="text" id="ro1Rej" readonly style="background:#fef2f2;font-weight:700;text-align:right;color:var(--red)" value="0"></div>
+    <div></div>
+  </div>
+
+  <!-- RO2 -->
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--purple)">RO 2</div>
+  <div class="fg-3" style="margin-bottom:6px">
+    <div class="field"><label>RO2 Feed Open (7AM)</label><input type="number" step="0.01" id="ro2FO" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label>RO2 Feed Close (7AM+1)</label><input type="number" step="0.01" id="ro2FC" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label style="color:var(--text3)">RO2 Feed (auto KL)</label><input type="text" id="ro2Feed" readonly style="background:#e8ecf4;font-weight:700;text-align:right" value="0"></div>
+  </div>
+  <div class="fg-3" style="margin-bottom:14px">
+    <div class="field"><label style="color:var(--green)">RO2 Permeate (75%)</label><input type="text" id="ro2Perm" readonly style="background:#ecfdf5;font-weight:700;text-align:right;color:var(--green)" value="0"></div>
+    <div class="field"><label style="color:var(--red)">RO2 Reject (25%)</label><input type="text" id="ro2Rej" readonly style="background:#fef2f2;font-weight:700;text-align:right;color:var(--red)" value="0"></div>
+    <div></div>
+  </div>
+
+  <!-- COMBINED RO -->
+  <div class="sum-grid" style="margin-bottom:14px">
+    <div class="sum-card"><div class="sum-label">Total RO Feed</div><div class="sum-val" id="roTotalFeed" style="color:var(--blue);font-size:15px">0 KL</div></div>
+    <div class="sum-card"><div class="sum-label">Total Permeate (75%)</div><div class="sum-val" id="roTotalPerm" style="color:var(--green);font-size:15px">0 KL</div></div>
+    <div class="sum-card"><div class="sum-label">Total Reject (25%)</div><div class="sum-val" id="roTotalRej" style="color:var(--red);font-size:15px">0 KL</div></div>
+  </div>
+
+  <!-- REJECT RO -->
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--orange)">♻️ Reject RO (Recovery from RO Reject Water)</div>
+  <div class="fg-3" style="margin-bottom:6px">
+    <div class="field"><label>Reject RO Feed Open (7AM)</label><input type="number" step="0.01" id="rrFO" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label>Reject RO Feed Close (7AM+1)</label><input type="number" step="0.01" id="rrFC" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label style="color:var(--text3)">Reject RO Feed (auto KL)</label><input type="text" id="rrFeed" readonly style="background:#e8ecf4;font-weight:700;text-align:right" value="0"></div>
+  </div>
+  <div class="fg-3" style="margin-bottom:14px">
+    <div class="field"><label style="color:var(--green)">Recovery (60%)</label><input type="text" id="rrRecov" readonly style="background:#ecfdf5;font-weight:700;text-align:right;color:var(--green)" value="0"></div>
+    <div class="field"><label style="color:var(--red)">Final Reject (40%)</label><input type="text" id="rrFinalRej" readonly style="background:#fef2f2;font-weight:700;text-align:right;color:var(--red)" value="0"></div>
+    <div></div>
+  </div>
+
+  <!-- BACKWASH -->
+  <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--cyan)">🔄 Backwash Recovery</div>
+  <div class="fg-3" style="margin-bottom:6px">
+    <div class="field"><label>Backwash Start Reading</label><input type="number" step="0.01" id="bwO" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label>Backwash Stop Reading</label><input type="number" step="0.01" id="bwC" oninput="calcWUR()" placeholder="0"></div>
+    <div class="field"><label style="color:var(--purple)">Backwash Recovery (KL)</label><input type="text" id="bwRecov" readonly style="background:#f5f3ff;font-weight:700;text-align:right;color:var(--purple)" value="0"></div>
+  </div>
+
+  <!-- TOTAL RECOVERY SUMMARY -->
+  <div class="sum-grid" style="margin-top:14px">
+    <div class="sum-card"><div class="sum-label">RO Permeate (Clean)</div><div class="sum-val" id="recPerm" style="color:var(--green);font-size:14px">0 KL</div></div>
+    <div class="sum-card"><div class="sum-label">Reject RO Recovery</div><div class="sum-val" id="recRR" style="color:var(--orange);font-size:14px">0 KL</div></div>
+    <div class="sum-card"><div class="sum-label">Backwash Recovery</div><div class="sum-val" id="recBW" style="color:var(--purple);font-size:14px">0 KL</div></div>
+    <div class="sum-card" style="background:#fef2f2"><div class="sum-label">Total Waste (Final Drain)</div><div class="sum-val" id="recWaste" style="color:var(--red);font-size:14px">0 KL</div></div>
+  </div>
+</div>
+
+<!-- PRODUCTION -->
+<div class="card">
+  <div class="card-title" style="font-size:14px">📦 Production (7AM → 7AM) — Product Water</div>
+  <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Product Water = water that goes INTO the product (auto from cases × bottles × size).</p>
+  <div style="overflow-x:auto">
+  <table class="tbl">
+    <thead><tr><th>SKU</th><th style="text-align:center">Size (L)</th><th style="text-align:center">Per Case</th><th style="width:100px;text-align:right">Cases</th><th style="text-align:right">Product Water (KL)</th></tr></thead>
+    <tbody id="wurProdBody"></tbody>
+    <tfoot><tr class="total-row"><td class="bold" colspan="3">TOTAL PRODUCT WATER</td><td class="mono bold" id="wTotalCases" style="text-align:right">0</td><td class="mono bold" id="wTotalProdW" style="text-align:right;color:var(--green)">0 KL</td></tr></tfoot>
+  </table>
+  </div>
+</div>
+
+<!-- WUR RESULT -->
+<div class="card" id="wurResultCard">
+  <div class="card-title" style="font-size:14px">📊 WUR Result — Today's Performance</div>
+  <div class="sum-grid">
+    <div class="sum-card"><div class="sum-label">Water Drawn</div><div class="sum-val" id="wrDrawn" style="color:var(--blue);font-size:15px">0 KL</div></div>
+    <div class="sum-card"><div class="sum-label">Net Consumed</div><div class="sum-val" id="wrNet" style="color:var(--purple);font-size:15px">0 KL</div></div>
+    <div class="sum-card"><div class="sum-label">Product Water</div><div class="sum-val" id="wrProd" style="color:var(--green);font-size:15px">0 KL</div></div>
+    <div class="sum-card" style="background:#eff6ff;border:1.5px solid #bfdbfe"><div class="sum-label">ACTUAL WUR (L/L)</div><div class="sum-val" id="wrActual" style="font-size:24px">0.00</div></div>
+    <div class="sum-card" style="background:#ecfdf5;border:1.5px solid #a7f3d0"><div class="sum-label">Theoretical WUR</div><div class="sum-val" style="color:var(--green);font-size:15px">1.03 L/L</div></div>
+    <div class="sum-card" style="background:#fef2f2;border:1.5px solid #fecaca"><div class="sum-label">Gap</div><div class="sum-val" id="wrGap" style="font-size:15px">0.00</div></div>
+    <div class="sum-card"><div class="sum-label">Status</div><div class="sum-val" id="wrStatus" style="font-size:14px">—</div></div>
+  </div>
+
+  <div style="margin-top:14px;font-size:13px;font-weight:600;margin-bottom:6px">Unaccounted Water</div>
+  <p style="font-size:11px;color:var(--text3);margin-bottom:8px">Unaccounted = Net Consumed − Product Water − RO Total Reject − Reject RO Final Reject − Backwash. Includes: rinsing, CIP, floor wash, leaks.</p>
+  <div class="sum-grid">
+    <div class="sum-card"><div class="sum-label">Unaccounted (KL)</div><div class="sum-val" id="wrUnacc" style="color:var(--orange);font-size:15px">0</div></div>
+    <div class="sum-card"><div class="sum-label">Unaccounted %</div><div class="sum-val" id="wrUnaccPct" style="color:var(--orange);font-size:15px">0%</div></div>
+  </div>
+
+  <div style="margin-top:14px;font-size:13px;font-weight:600;margin-bottom:8px">Water Source Split</div>
+  <div id="wurSrcBars"></div>
+
+  <div id="wurInsights" style="margin-top:14px;background:var(--bg);border-radius:var(--radius-sm);padding:14px;font-size:12px;color:var(--text2);line-height:1.7;display:none"></div>
+
+  <div style="margin-top:16px;display:flex;gap:10px">
+    <button class="btn btn-brand" style="flex:1" onclick="saveWUR()">💾 Save WUR</button>
+    <button class="btn btn-outline" style="flex:1" onclick="downloadWURPDF()">📥 Download PDF</button>
+  </div>
+</div>
+
+</div>
+
+
+<!-- PAGE 4: TARGETS & ALERTS -->
+<div class="page" id="pg4">
+<div class="card">
+  <div class="card-title"><span class="icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)">🎯</span> Efficiency Targets & Alert Thresholds</div>
+  <p style="font-size:12px;color:var(--text3);margin-bottom:16px">Set minimum efficiency target per line. Lines below threshold will show as <span class="badge badge-red">CRITICAL</span> in dashboard.</p>
+  <div id="targetsList"></div>
+  <div style="margin-top:16px"><button class="btn btn-brand" onclick="saveTargets()">💾 Save Targets</button></div>
+</div>
+</div>
+
+<!-- PAGE 5: INVENTORY -->
+<div class="page" id="pg5">
+<div class="card">
+  <div class="card-title"><span class="icon" style="background:linear-gradient(135deg,#667eea,#764ba2)">📦</span> Daily Inventory Upload</div>
+  <div class="field"><label>Date</label><input type="date" id="invDate"></div>
+  <div class="file-drop" id="fileDrop" onclick="document.getElementById('invFile').click()">
+    <input type="file" id="invFile" accept=".csv,.xlsx,.xls" onchange="handleInvFile(event)">
+    <div style="font-size:28px;margin-bottom:8px">📁</div>
+    <div style="font-size:14px;font-weight:600">Click to upload CSV / Excel file</div>
+    <div style="font-size:11px;margin-top:4px">Columns: Item Name, Quantity, Unit</div>
+  </div>
+  <div id="invPreview" style="margin-top:16px"></div>
+  <div id="invActions" style="margin-top:12px;display:none"><button class="btn btn-brand" onclick="saveInventory()">💾 Save Inventory</button></div>
+</div>
+</div>
+
+<!-- PAGE 6: P&L -->
+<div class="page" id="pg6">
+<div class="card">
+  <div class="card-title"><span class="icon" style="background:linear-gradient(135deg,#fa709a,#fee140)">📈</span> Monthly P&L Statement</div>
+  <div class="fg" style="margin-bottom:16px">
+    <div class="field"><label>Month</label><input type="month" id="plMonth" onchange="calcPL()"></div>
+    <div class="field"><label>Status</label><select id="plStatus"><option value="draft">Draft</option><option value="final">Final</option></select></div>
+  </div>
+  <button class="btn btn-outline" style="margin-bottom:16px" onclick="pullPLData()">🔄 Pull Revenue from Revenue Tab & Expenses from CPC Tab</button>
+
+  <div class="card-title" style="font-size:14px;margin-bottom:12px">📥 Income</div>
+  <table class="tbl">
+    <thead><tr><th>Income Head</th><th style="width:160px;text-align:right">Amount (₹)</th><th style="width:80px;text-align:center">Source</th></tr></thead>
+    <tbody>
+      <tr><td class="bold">Conversion Revenue (with Incentive)</td><td class="mono" style="text-align:right;background:#ecfdf5" id="plRevAmt">₹0</td><td style="text-align:center"><span class="badge badge-green">Auto</span></td></tr>
+      <tr><td>Other Income</td><td><input type="number" class="pl-inc-manual" data-head="Other Income" placeholder="0" oninput="calcPL()" style="text-align:right"></td><td style="text-align:center"><span class="badge badge-orange">Manual</span></td></tr>
+      <tr><td>Interest Income</td><td><input type="number" class="pl-inc-manual" data-head="Interest Income" placeholder="0" oninput="calcPL()" style="text-align:right"></td><td style="text-align:center"><span class="badge badge-orange">Manual</span></td></tr>
+    </tbody>
+    <tfoot><tr class="total-row"><td class="bold">TOTAL INCOME</td><td class="mono bold" id="plIncTotal" style="text-align:right;color:var(--green)">₹0</td><td></td></tr></tfoot>
+  </table>
+
+  <div class="card-title" style="font-size:14px;margin:20px 0 12px">📤 Expenses (Auto from CPC)</div>
+  <table class="tbl">
+    <thead><tr><th>Expense Head</th><th style="width:160px;text-align:right">Amount (₹)</th><th style="width:80px;text-align:center">Type</th></tr></thead>
+    <tbody id="plExpBody"></tbody>
+    <tfoot><tr class="total-row"><td class="bold">TOTAL EXPENSES</td><td class="mono bold" id="plExpTotal" style="text-align:right;color:var(--red)">₹0</td><td></td></tr></tfoot>
+  </table>
+
+  <div class="sum-grid" style="margin-top:16px">
+    <div class="sum-card"><div class="sum-label">Total Income</div><div class="sum-val" id="plIncSum" style="color:var(--green)">₹0</div></div>
+    <div class="sum-card"><div class="sum-label">Total Expense</div><div class="sum-val" id="plExpSum" style="color:var(--red)">₹0</div></div>
+    <div class="sum-card" style="background:var(--brand-light)"><div class="sum-label">Net Profit / Loss</div><div class="sum-val" id="plNet">₹0</div></div>
+    <div class="sum-card"><div class="sum-label">Margin %</div><div class="sum-val" id="plMargin">0%</div></div>
+  </div>
+  <button class="btn btn-brand" onclick="savePL()">💾 Save P&L</button>
+</div>
+</div>
+
+<!-- PAGE 7: USER MANAGEMENT -->
+<div class="page" id="pg7">
+<div class="card">
+  <div class="card-title"><span class="icon" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">👤</span> User Management</div>
+  <p style="font-size:12px;color:var(--text3);margin-bottom:16px">Add/remove users who can access this Semi-Admin Panel.</p>
+  <div class="fg" style="margin-bottom:16px">
+    <div class="field"><label>Username</label><input type="text" id="newUser" placeholder="Enter username"></div>
+    <div class="field"><label>Password</label><input type="text" id="newPass" placeholder="Enter password"></div>
+  </div>
+  <div class="field"><label>Role</label><select id="newRole"><option value="admin">Admin (Full Access)</option><option value="accounts">Accounts (CPC, Revenue, P&L)</option><option value="supervisor">Supervisor (Electricity, Inventory, Targets)</option></select></div>
+  <button class="btn btn-brand" style="margin-top:12px" onclick="addUser()">+ Add User</button>
+  <table class="tbl" style="margin-top:20px">
+    <thead><tr><th>Username</th><th>Role</th><th>Action</th></tr></thead>
+    <tbody id="usersBody"></tbody>
+  </table>
+</div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// CONFIG
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHo67GzrRbyiZ7PGeCgLsKoIZ-OiXhmvYI70FpmJrycofIPdbyvcu0BW9OZ8PQL-nM/exec';
+
+// COST HEADS - FIXED (monthly, same every month)
+const FIXED_COSTS = ['Rent','EMIs','Forklift Lease','Insurance','Depreciation'];
+
+// COST HEADS - VARIABLE (changes monthly)
+const VAR_COSTS = [
+  {name:'Electricity',source:'Manual'},
+  {name:'Water Tanker',source:'Manual'},
+  {name:'Labour',source:'Manual'},
+  {name:'Staff Salary',source:'Manual'},
+  {name:'Housekeeping',source:'Manual'},
+  {name:'Security',source:'Manual'},
+  {name:'Water MIDC',source:'Manual'},
+  {name:'Lab Material',source:'Manual'},
+  {name:'Maintenance',source:'Manual'},
+  {name:'Other Expenses',source:'Manual'},
+];
+
+// SKUS
+const SKUS = ['20L','10L','5L','2L','1L','500ML','250ML','200ML'];
+
+// P&L Income heads (manual only — revenue auto-fetched)
+const PL_MANUAL_INC = ['Other Income','Interest Income'];
+
+// MACHINE LINES for targets
+const MACHINES = ['Shrink 120','Shrink 200','Blowing 120','Blowing 200','Filler 120','Filler 200','Labeller 120','Labeller 200','MidWay Filler','20L Jar'];
+
+// DEFAULT USERS (stored in localStorage, synced to sheet)
+const DEFAULT_USERS = [{user:'admin',pass:'admin123',role:'admin'},{user:'accounts',pass:'acc123',role:'accounts'}];
+
+// STATE
+let currentUser = null;
+let invData = null;
+
+// ==================== LOGIN ====================
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value.trim();
+  const err=document.getElementById('loginErr');
+  if(!u||!p){err.textContent='Enter username and password';err.style.display='block';return}
+  const users=getUsers();
+  const found=users.find(x=>x.user===u&&x.pass===p);
+  if(!found){err.textContent='Invalid username or password';err.style.display='block';return}
+  err.style.display='none';
+  currentUser=found;
+  localStorage.setItem('sa_current_user',JSON.stringify(found));
+  showApp();
+}
+
+function doLogout(){
+  localStorage.removeItem('sa_current_user');
+  currentUser=null;
+  document.getElementById('appMain').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+
+function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appMain').style.display='block';
+  document.getElementById('dispUser').textContent=currentUser.user+' ('+currentUser.role+')';
+  document.getElementById('dispDate').textContent=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  initPages();
+}
+
+function getUsers(){
+  try{const s=localStorage.getItem('sa_users');return s?JSON.parse(s):DEFAULT_USERS;}catch(e){return DEFAULT_USERS;}
+}
+function saveUsers(users){localStorage.setItem('sa_users',JSON.stringify(users))}
+
+// ==================== TABS ====================
+function setTab(i){
+  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j===i));
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+}
+
+// ==================== INIT PAGES ====================
+function initPages(){
+  const today=new Date().toISOString().split('T')[0];
+  const month=today.substring(0,7);
+  document.getElementById('elecDate').value=today;
+  document.getElementById('invDate').value=today;
+  document.getElementById('plMonth').value=month;
+  initCPC();initRevenue();initWUR();initTargets();initPL();initUserTable();
+}
+
+// ==================== CPC ====================
+function setCpcDays(){
+  const month=document.getElementById('cpcMonth').value;
+  if(!month)return;
+  const parts=month.split('-');
+  const year=parseInt(parts[0]);
+  const mon=parseInt(parts[1]);
+  // Get last day of the month = number of days
+  const days=new Date(year,mon,0).getDate();
+  document.getElementById('cpcDays').value=days;
+}
+
+function initCPC(){
+  const month=new Date().toISOString().substring(0,7);
+  document.getElementById('cpcMonth').value=month;
+  setCpcDays();
+  
+  // Load saved data for this month
+  const saved=JSON.parse(localStorage.getItem('sa_cpc_'+month)||'{}');
+  
+  // Fixed costs table
+  const fixedBody=document.querySelector('#fixedTable tbody');
+  fixedBody.innerHTML=FIXED_COSTS.map(h=>{
+    const val=saved.fixed?saved.fixed[h]||'':'';
+    return`<tr><td>${h}</td><td><input type="number" class="fixed-amt" data-head="${h}" value="${val}" placeholder="0" oninput="calcCPC()"></td><td class="mono" style="text-align:right;color:var(--text3)" id="fpd_${h.replace(/\s/g,'')}">₹0</td></tr>`;
+  }).join('');
+  
+  // Variable costs table
+  const varBody=document.querySelector('#varTable tbody');
+  varBody.innerHTML=VAR_COSTS.map(v=>{
+    const val=saved.variable?saved.variable[v.name]||'':'';
+    return`<tr><td>${v.name}</td><td><input type="number" class="var-amt" data-head="${v.name}" value="${val}" placeholder="0" oninput="calcCPC()"></td></tr>`;
+  }).join('');
+  
+  if(saved.cases)document.getElementById('cpcCases').value=saved.cases;
+  if(saved.days)document.getElementById('cpcDays').value=saved.days;
+  
+  calcCPC();
+}
+
+function calcCPC(){
+  const days=parseInt(document.getElementById('cpcDays').value)||30;
+  const cases=parseInt(document.getElementById('cpcCases').value)||0;
+  
+  // Fixed totals
+  let fixedTotal=0;
+  document.querySelectorAll('.fixed-amt').forEach(inp=>{
+    const v=parseFloat(inp.value)||0;
+    fixedTotal+=v;
+    const perDay=days>0?(v/days):0;
+    const id='fpd_'+inp.dataset.head.replace(/\s/g,'');
+    const el=document.getElementById(id);
+    if(el)el.textContent='₹'+Math.round(perDay).toLocaleString('en-IN');
+  });
+  
+  // Variable totals
+  let varTotal=0;
+  document.querySelectorAll('.var-amt').forEach(inp=>{varTotal+=parseFloat(inp.value)||0});
+  
+  const totalCost=fixedTotal+varTotal;
+  const cpc=cases>0?(totalCost/cases):0;
+  
+  // Update displays
+  document.getElementById('fixedTotal').textContent='₹'+fixedTotal.toLocaleString('en-IN');
+  document.getElementById('fixedPerDay').textContent='₹'+Math.round(fixedTotal/(days||1)).toLocaleString('en-IN');
+  document.getElementById('varTotal').textContent='₹'+varTotal.toLocaleString('en-IN');
+  document.getElementById('sumFixed').textContent='₹'+fixedTotal.toLocaleString('en-IN');
+  document.getElementById('sumVar').textContent='₹'+varTotal.toLocaleString('en-IN');
+  document.getElementById('sumTotal').textContent='₹'+totalCost.toLocaleString('en-IN');
+  document.getElementById('sumCPC').textContent='₹'+cpc.toFixed(2);
+  
+  // Cost split bars
+  const allCosts=[];
+  document.querySelectorAll('.fixed-amt').forEach(inp=>{const v=parseFloat(inp.value)||0;if(v>0)allCosts.push({name:inp.dataset.head,val:v,type:'Fixed'})});
+  document.querySelectorAll('.var-amt').forEach(inp=>{const v=parseFloat(inp.value)||0;if(v>0)allCosts.push({name:inp.dataset.head,val:v,type:'Variable'})});
+  allCosts.sort((a,b)=>b.val-a.val);
+  
+  const maxCost=allCosts.length?allCosts[0].val:1;
+  const colors=['#ef4444','#f59e0b','#eab308','#3b82f6','#10b981','#8b5cf6','#06b6d4','#ec4899','#6366f1','#14b8a6','#f97316','#a855f7','#0ea5e9','#84cc16','#d946ef','#64748b'];
+  let barsHTML='';
+  allCosts.forEach((c,i)=>{
+    const pct=maxCost>0?(c.val/maxCost)*100:0;
+    const share=totalCost>0?((c.val/totalCost)*100).toFixed(1):0;
+    barsHTML+=`<div class="prog-row"><div class="prog-header"><span class="name">${c.name} <span style="color:var(--text3);font-size:10px">(${share}% · ${c.type})</span></span><span class="val">₹${c.val.toLocaleString('en-IN')}</span></div><div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${colors[i%16]}"></div></div></div>`;
+  });
+  document.getElementById('costSplitBars').innerHTML=barsHTML||'<div style="color:var(--text3);font-size:12px">Enter costs above to see breakdown</div>';
+  
+  // Insights
+  const insights=document.getElementById('cpcInsights');
+  if(totalCost>0&&cases>0){
+    const fixedPct=((fixedTotal/totalCost)*100).toFixed(1);
+    const varPct=((varTotal/totalCost)*100).toFixed(1);
+    const topCost=allCosts.length?allCosts[0]:null;
+    let insHTML=`<strong>📊 CPC Insights</strong><br>`;
+    insHTML+=`• Fixed costs: ₹${fixedTotal.toLocaleString('en-IN')} (${fixedPct}%) | Variable: ₹${varTotal.toLocaleString('en-IN')} (${varPct}%)<br>`;
+    insHTML+=`• Total cases: ${cases.toLocaleString('en-IN')} | Cost per case: <strong style="color:var(--brand)">₹${cpc.toFixed(2)}</strong><br>`;
+    if(topCost)insHTML+=`• Highest cost head: <strong>${topCost.name}</strong> — ₹${topCost.val.toLocaleString('en-IN')} (${((topCost.val/totalCost)*100).toFixed(1)}% of total)<br>`;
+    insHTML+=`• Per day cost: ₹${Math.round(totalCost/(days||1)).toLocaleString('en-IN')} | Per day fixed: ₹${Math.round(fixedTotal/(days||1)).toLocaleString('en-IN')}`;
+    insights.innerHTML=insHTML;
+    insights.style.display='block';
+  }else{insights.style.display='none'}
+}
+
+function saveCPC(){
+  const month=document.getElementById('cpcMonth').value;
+  const days=parseInt(document.getElementById('cpcDays').value)||30;
+  const cases=parseInt(document.getElementById('cpcCases').value)||0;
+  const fixed={},variable={};
+  document.querySelectorAll('.fixed-amt').forEach(inp=>{fixed[inp.dataset.head]=parseFloat(inp.value)||0});
+  document.querySelectorAll('.var-amt').forEach(inp=>{variable[inp.dataset.head]=parseFloat(inp.value)||0});
+  
+  let fixedTotal=0,varTotal=0;
+  Object.values(fixed).forEach(v=>fixedTotal+=v);
+  Object.values(variable).forEach(v=>varTotal+=v);
+  const totalCost=fixedTotal+varTotal;
+  const cpc=cases>0?(totalCost/cases):0;
+  
+  const entry={month,days,cases,fixed,variable,fixedTotal,varTotal,totalCost,cpc:parseFloat(cpc.toFixed(2)),user:currentUser.user,timestamp:new Date().toISOString()};
+  
+  // Save locally
+  localStorage.setItem('sa_cpc_'+month,JSON.stringify(entry));
+  const all=JSON.parse(localStorage.getItem('sa_cpc_history')||'[]');
+  const existIdx=all.findIndex(x=>x.month===month);
+  if(existIdx>=0)all[existIdx]=entry;else all.push(entry);
+  localStorage.setItem('sa_cpc_history',JSON.stringify(all));
+  
+  // Send to sheets
+  sendToSheets('cpc',entry);
+  toast('CPC for '+month+' saved!','success');
+}
+
+// ==================== REVENUE ====================
+function initRevenue(){
+  const tbody=document.getElementById('revBody');
+  const rates=JSON.parse(localStorage.getItem('sa_rates')||'{}');
+  tbody.innerHTML=SKUS.map(s=>{
+    const rWO=rates[s+'_wo']||'';
+    const rW=rates[s+'_w']||'';
+    return`<tr><td class="bold">${s}</td><td><input type="number" class="rev-wo" data-sku="${s}" value="${rWO}" placeholder="0" oninput="calcRevenue()" style="text-align:right"></td><td><input type="number" class="rev-w" data-sku="${s}" value="${rW}" placeholder="0" oninput="calcRevenue()" style="text-align:right"></td><td class="mono" style="text-align:right" id="revProd_${s}">0</td><td class="mono" style="text-align:right" id="revWO_${s}">₹0</td><td class="mono" style="text-align:right" id="revW_${s}">₹0</td></tr>`;
+  }).join('');
+  calcRevenue();
+}
+function calcRevenue(){
+  let tProd=0,tWO=0,tW=0;
+  SKUS.forEach(s=>{
+    const wo=parseFloat(document.querySelector('.rev-wo[data-sku="'+s+'"]').value)||0;
+    const w=parseFloat(document.querySelector('.rev-w[data-sku="'+s+'"]').value)||0;
+    const prod=parseInt(document.getElementById('revProd_'+s).textContent)||0;
+    const amtWO=wo*prod,amtW=w*prod;
+    document.getElementById('revWO_'+s).textContent='₹'+amtWO.toLocaleString('en-IN');
+    document.getElementById('revW_'+s).textContent='₹'+amtW.toLocaleString('en-IN');
+    tProd+=prod;tWO+=amtWO;tW+=amtW;
+  });
+  document.getElementById('revTotalProd').textContent=tProd.toLocaleString('en-IN');
+  document.getElementById('revTotalWO').textContent='₹'+tWO.toLocaleString('en-IN');
+  document.getElementById('revTotalW').textContent='₹'+tW.toLocaleString('en-IN');
+}
+function getRevenueTotals(){
+  // Used by P&L to auto-fetch revenue
+  let tWO=0,tW=0;
+  SKUS.forEach(s=>{
+    const woEl=document.querySelector('.rev-wo[data-sku="'+s+'"]');
+    const wEl=document.querySelector('.rev-w[data-sku="'+s+'"]');
+    const wo=woEl?parseFloat(woEl.value)||0:0;
+    const w=wEl?parseFloat(wEl.value)||0:0;
+    const prod=parseInt(document.getElementById('revProd_'+s).textContent)||0;
+    tWO+=wo*prod;tW+=w*prod;
+  });
+  return{withoutIncentive:tWO,withIncentive:tW};
+}
+function saveRevenue(){
+  const rates={};
+  document.querySelectorAll('.rev-wo').forEach(inp=>{rates[inp.dataset.sku+'_wo']=parseFloat(inp.value)||0});
+  document.querySelectorAll('.rev-w').forEach(inp=>{rates[inp.dataset.sku+'_w']=parseFloat(inp.value)||0});
+  localStorage.setItem('sa_rates',JSON.stringify(rates));
+  sendToSheets('rates',{rates,user:currentUser.user,timestamp:new Date().toISOString()});
+  toast('Rates saved!','success');
+}
+
+// ==================== ELECTRICITY ====================
+function calcElec(){
+  const o=parseFloat(document.getElementById('elecOpen').value)||0;
+  const c=parseFloat(document.getElementById('elecClose').value)||0;
+  const rate=parseFloat(document.getElementById('elecRate').value)||0;
+  const units=Math.max(0,c-o);
+  document.getElementById('elecUnits').textContent=units.toFixed(1);
+  document.getElementById('elecRateDisp').textContent='₹'+rate;
+  document.getElementById('elecCost').textContent='₹'+(units*rate).toLocaleString('en-IN');
+}
+function saveElec(){
+  const entry={
+    date:document.getElementById('elecDate').value,
+    opening:parseFloat(document.getElementById('elecOpen').value)||0,
+    closing:parseFloat(document.getElementById('elecClose').value)||0,
+    units:parseFloat(document.getElementById('elecUnits').textContent)||0,
+    rate:parseFloat(document.getElementById('elecRate').value)||0,
+    cost:parseFloat(document.getElementById('elecUnits').textContent)*(parseFloat(document.getElementById('elecRate').value)||0),
+    user:currentUser.user,timestamp:new Date().toISOString()
+  };
+  const all=JSON.parse(localStorage.getItem('sa_elec')||'[]');
+  all.push(entry);localStorage.setItem('sa_elec',JSON.stringify(all));
+  sendToSheets('electricity',entry);
+  toast('Electricity reading saved!','success');
+  document.getElementById('elecOpen').value='';document.getElementById('elecClose').value='';calcElec();
+}
+
+// ==================== TARGETS ====================
+function initTargets(){
+  const targets=JSON.parse(localStorage.getItem('sa_targets')||'{}');
+  const container=document.getElementById('targetsList');
+  container.innerHTML=MACHINES.map(m=>{
+    const t=targets[m]||80;
+    return`<div class="target-row"><span class="target-name">${m}</span><input type="number" class="target-input" data-machine="${m}" value="${t}" min="0" max="100"><span class="target-unit">%</span></div>`;
+  }).join('');
+}
+function saveTargets(){
+  const targets={};
+  document.querySelectorAll('.target-input').forEach(inp=>{targets[inp.dataset.machine]=parseInt(inp.value)||80});
+  localStorage.setItem('sa_targets',JSON.stringify(targets));
+  sendToSheets('targets',{targets,user:currentUser.user,timestamp:new Date().toISOString()});
+  toast('Targets saved!','success');
+}
+
+// ==================== INVENTORY ====================
+function handleInvFile(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  if(file.name.endsWith('.csv')){
+    reader.onload=function(e){parseCSV(e.target.result)};reader.readAsText(file);
+  }else{
+    // For xlsx, use basic parsing
+    reader.onload=function(e){
+      try{parseCSV(e.target.result)}catch(err){toast('Please use CSV format','error')}
+    };reader.readAsText(file);
+  }
+}
+function parseCSV(text){
+  const lines=text.split('\n').filter(l=>l.trim());
+  if(lines.length<2){toast('File is empty','error');return}
+  const headers=lines[0].split(',').map(h=>h.trim().replace(/"/g,''));
+  const rows=[];
+  for(let i=1;i<lines.length;i++){
+    const cols=lines[i].split(',').map(c=>c.trim().replace(/"/g,''));
+    if(cols.length>=2){rows.push({item:cols[0]||'',qty:cols[1]||'0',unit:cols[2]||'pcs'})}
+  }
+  invData=rows;
+  // Show preview
+  let h='<table class="tbl"><thead><tr><th>#</th><th>Item</th><th>Quantity</th><th>Unit</th></tr></thead><tbody>';
+  rows.forEach((r,i)=>{h+=`<tr><td>${i+1}</td><td class="bold">${r.item}</td><td class="mono">${r.qty}</td><td>${r.unit}</td></tr>`});
+  h+='</tbody></table>';
+  document.getElementById('invPreview').innerHTML=h;
+  document.getElementById('invActions').style.display='block';
+  toast(rows.length+' items loaded','success');
+}
+function saveInventory(){
+  if(!invData||!invData.length){toast('No data to save','error');return}
+  const entry={date:document.getElementById('invDate').value,items:invData,user:currentUser.user,timestamp:new Date().toISOString()};
+  const all=JSON.parse(localStorage.getItem('sa_inv')||'[]');
+  all.push(entry);localStorage.setItem('sa_inv',JSON.stringify(all));
+  sendToSheets('inventory',entry);
+  toast('Inventory saved!','success');
+}
+
+// ==================== WATER USAGE RATIO ====================
+const SKU_VOLUME = {
+  '20L': {ltr:20, perCase:1, label:'20L Jar'},
+  '10L': {ltr:10, perCase:1, label:'10L Jar'},
+  '5L':  {ltr:5,  perCase:1, label:'5L Jar'},
+  '2L':  {ltr:2,  perCase:9, label:'2L Bottle'},
+  '1L':  {ltr:1,  perCase:12, label:'1L Bottle'},
+  '500ML':{ltr:0.5, perCase:24, label:'500ML Bottle'},
+  '250ML':{ltr:0.25, perCase:48, label:'250ML Bottle'},
+  '200ML':{ltr:0.2, perCase:48, label:'200ML Bottle'},
+};
+
+// WUR LIMITS
+const WUR_LIMITS = {
+  excellent: 1.3,  // ≤1.3 = Excellent
+  good: 1.5,       // ≤1.5 = Good
+  average: 2.0,    // ≤2.0 = Average
+  bad: 3.0,        // ≤3.0 = Below Average, >3.0 = Critical
+};
+
+function wurStatus(wur){
+  if(wur<=0)return{text:'—',badge:'badge-orange',color:'var(--text3)'};
+  if(wur<=WUR_LIMITS.excellent)return{text:'Excellent',badge:'badge-green',color:'var(--green)'};
+  if(wur<=WUR_LIMITS.good)return{text:'Good',badge:'badge-green',color:'var(--green)'};
+  if(wur<=WUR_LIMITS.average)return{text:'Average',badge:'badge-orange',color:'var(--orange)'};
+  if(wur<=WUR_LIMITS.bad)return{text:'Below Avg',badge:'badge-orange',color:'var(--orange)'};
+  return{text:'Critical',badge:'badge-red',color:'var(--red)'};
+}
+
+function initWUR(){
+  document.getElementById('wurDate').value=new Date().toISOString().split('T')[0];
+  const tb=document.getElementById('wurProdBody');
+  tb.innerHTML=SKUS.map(s=>{
+    const i=SKU_VOLUME[s]||{ltr:0,perCase:1};
+    return`<tr><td class="bold">${s}</td><td class="mono" style="text-align:center">${i.ltr}</td><td class="mono" style="text-align:center">${i.perCase}</td><td><input type="number" class="wp" data-sku="${s}" placeholder="0" oninput="calcWUR()" style="text-align:right"></td><td class="mono" style="text-align:right" id="wpw_${s}">0</td></tr>`;
+  }).join('');
+  calcWUR();
+}
+
+function calcWUR(){
+  // === WATER DRAWN ===
+  const src={};let drawn=0;
+  ['bw1','bw2','bw3','tmc'].forEach(s=>{
+    const o=parseFloat(document.querySelector('.ws[data-s="'+s+'"]').value)||0;
+    const c=parseFloat(document.querySelector('.wsc[data-s="'+s+'"]').value)||0;
+    src[s]=Math.max(0,c-o);drawn+=src[s];
+    document.getElementById('wc_'+s).textContent=src[s].toFixed(2);
+  });
+  // Tanker: count × 10 KL
+  const tnkCount=parseInt(document.getElementById('wTankerCount').value)||0;
+  const tnkKL=tnkCount*10;
+  src.tanker=tnkKL;drawn+=tnkKL;
+  document.getElementById('wc_tanker').textContent=tnkKL.toFixed(2);
+  document.getElementById('wTotalDrawn').textContent=drawn.toFixed(2)+' KL';
+
+  // === TANK BALANCE ===
+  const tankStart=parseFloat(document.getElementById('wTankStart').value)||0;
+  const tankEnd=parseFloat(document.getElementById('wTankEnd').value)||0;
+  const net=drawn; // Net consumed = total water drawn today
+
+  // === RO1 ===
+  const ro1FO=parseFloat(document.getElementById('ro1FO').value)||0;
+  const ro1FC=parseFloat(document.getElementById('ro1FC').value)||0;
+  const ro1Feed=Math.max(0,ro1FC-ro1FO);
+  const ro1Perm=ro1Feed*0.75;
+  const ro1Rej=ro1Feed*0.25;
+  document.getElementById('ro1Feed').value=ro1Feed.toFixed(2);
+  document.getElementById('ro1Perm').value=ro1Perm.toFixed(2);
+  document.getElementById('ro1Rej').value=ro1Rej.toFixed(2);
+
+  // === RO2 ===
+  const ro2FO=parseFloat(document.getElementById('ro2FO').value)||0;
+  const ro2FC=parseFloat(document.getElementById('ro2FC').value)||0;
+  const ro2Feed=Math.max(0,ro2FC-ro2FO);
+  const ro2Perm=ro2Feed*0.75;
+  const ro2Rej=ro2Feed*0.25;
+  document.getElementById('ro2Feed').value=ro2Feed.toFixed(2);
+  document.getElementById('ro2Perm').value=ro2Perm.toFixed(2);
+  document.getElementById('ro2Rej').value=ro2Rej.toFixed(2);
+
+  // COMBINED RO
+  const totalFeed=ro1Feed+ro2Feed;
+  const totalPerm=ro1Perm+ro2Perm;
+  const totalRej=ro1Rej+ro2Rej;
+  document.getElementById('roTotalFeed').textContent=totalFeed.toFixed(2)+' KL';
+  document.getElementById('roTotalPerm').textContent=totalPerm.toFixed(2)+' KL';
+  document.getElementById('roTotalRej').textContent=totalRej.toFixed(2)+' KL';
+
+  // === REJECT RO ===
+  const rrFO=parseFloat(document.getElementById('rrFO').value)||0;
+  const rrFC=parseFloat(document.getElementById('rrFC').value)||0;
+  const rrFeed=Math.max(0,rrFC-rrFO);
+  const rrRecov=rrFeed*0.60;
+  const rrFinalRej=rrFeed*0.40;
+  document.getElementById('rrFeed').value=rrFeed.toFixed(2);
+  document.getElementById('rrRecov').value=rrRecov.toFixed(2);
+  document.getElementById('rrFinalRej').value=rrFinalRej.toFixed(2);
+
+  // === BACKWASH ===
+  const bwO=parseFloat(document.getElementById('bwO').value)||0;
+  const bwC=parseFloat(document.getElementById('bwC').value)||0;
+  const bwRecov=Math.max(0,bwC-bwO);
+  document.getElementById('bwRecov').value=bwRecov.toFixed(2);
+
+  // RECOVERY SUMMARY
+  const totalWaste=totalRej-rrFeed+rrFinalRej; // RO reject that didn't go to Reject RO + Reject RO final reject
+  const actualWaste=Math.max(0,totalRej-rrFeed)+rrFinalRej;
+  document.getElementById('recPerm').textContent=totalPerm.toFixed(2)+' KL';
+  document.getElementById('recRR').textContent=rrRecov.toFixed(2)+' KL';
+  document.getElementById('recBW').textContent=bwRecov.toFixed(2)+' KL';
+  document.getElementById('recWaste').textContent=actualWaste.toFixed(2)+' KL';
+
+  // === PRODUCTION ===
+  let totalCases=0,prodW=0;
+  SKUS.forEach(s=>{
+    const i=SKU_VOLUME[s]||{ltr:0,perCase:1};
+    const cs=parseInt(document.querySelector('.wp[data-sku="'+s+'"]').value)||0;
+    let kl;
+    if(s==='20L'){
+      kl=(cs*25)/1000; // 20L: cases × 25 liters (20L filling + 5L rinsing)
+    }else{
+      const filling=(cs*i.perCase*i.ltr)/1000;
+      kl=filling*1.03; // Others: Filling + 3% Rinsing
+    }
+    totalCases+=cs;prodW+=kl;
+    document.getElementById('wpw_'+s).textContent=kl>0?kl.toFixed(3):'0';
+  });
+  document.getElementById('wTotalCases').textContent=totalCases.toLocaleString('en-IN');
+  document.getElementById('wTotalProdW').textContent=prodW.toFixed(3)+' KL';
+
+  // === WUR RESULT ===
+  const actualWUR=prodW>0?(net/prodW):0;
+  const gap=actualWUR-1.03;
+  const st=wurStatus(actualWUR);
+  // Unaccounted = net consumed - product water - actual waste going to drain - backwash recovery
+  // (because product water + drain waste + backwash + unaccounted = net consumed)
+  const unacc=net-prodW-actualWaste-bwRecov;
+  const unaccPct=net>0?((Math.max(0,unacc)/net)*100).toFixed(1):0;
+
+  document.getElementById('wrDrawn').textContent=drawn.toFixed(2)+' KL';
+  document.getElementById('wrNet').textContent=net.toFixed(2)+' KL';
+  document.getElementById('wrProd').textContent=prodW.toFixed(3)+' KL';
+  document.getElementById('wrActual').textContent=actualWUR>0?actualWUR.toFixed(2):'0.00';
+  document.getElementById('wrActual').style.color=actualWUR>0?st.color:'var(--text3)';
+  document.getElementById('wrGap').textContent=(gap>0?'+':'')+gap.toFixed(2)+' L/L';
+  document.getElementById('wrGap').style.color=gap<=0.5?'var(--green)':gap<=1.0?'var(--orange)':'var(--red)';
+  document.getElementById('wrUnacc').textContent=Math.max(0,unacc).toFixed(2)+' KL';
+  document.getElementById('wrUnaccPct').textContent=unaccPct+'%';
+  document.getElementById('wrUnaccPct').style.color=parseFloat(unaccPct)<=30?'var(--green)':parseFloat(unaccPct)<=50?'var(--orange)':'var(--red)';
+  document.getElementById('wrStatus').textContent=actualWUR>0?st.text:'\u2014';
+  document.getElementById('wrStatus').style.color=actualWUR>0?st.color:'var(--text3)';
+
+  // SOURCE BARS
+  const srcArr=[{n:'Borewell 1',v:src.bw1,c:'#3b82f6'},{n:'Borewell 2',v:src.bw2,c:'#06b6d4'},{n:'Borewell 3',v:src.bw3,c:'#8b5cf6'},{n:'TMC',v:src.tmc,c:'#10b981'},{n:'Tanker ('+tnkCount+')',v:tnkKL,c:'#f59e0b'}].filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  const mx=srcArr.length?srcArr[0].v:1;
+  let bars='';srcArr.forEach(s=>{const p=mx>0?(s.v/mx)*100:0;const sh=drawn>0?((s.v/drawn)*100).toFixed(1):0;bars+=`<div class="prog-row"><div class="prog-header"><span class="name">${s.n} (${sh}%)</span><span class="val">${s.v.toFixed(2)} KL</span></div><div class="prog-track"><div class="prog-fill" style="width:${p}%;background:${s.c}"></div></div></div>`;});
+  document.getElementById('wurSrcBars').innerHTML=bars||'<div style="color:var(--text3);font-size:11px">Enter meter readings above</div>';
+
+  // INSIGHTS
+  const ins=document.getElementById('wurInsights');
+  if(net>0&&prodW>0){
+    let h='<strong>\uD83D\uDCA7 WUR Analysis \u2014 Plant Day '+document.getElementById('wurDate').value+' (7AM\u21927AM)</strong><br>';
+    h+='\u2022 <strong>Actual WUR: <span style="color:'+st.color+'">'+actualWUR.toFixed(2)+' L/L \u2014 '+st.text+'</span></strong><br>';
+    h+='\u2022 Theoretical WUR: 1.03 L/L | Gap: '+gap.toFixed(2)+' L/L<br>';
+    h+='\u2022 Water Drawn: '+drawn.toFixed(2)+' KL | Net Consumed: '+net.toFixed(2)+' KL | Product Water: '+prodW.toFixed(3)+' KL<br>';
+    if(totalFeed>0)h+='\u2022 RO1: Feed '+ro1Feed.toFixed(2)+' \u2192 Permeate '+ro1Perm.toFixed(2)+' | RO2: Feed '+ro2Feed.toFixed(2)+' \u2192 Permeate '+ro2Perm.toFixed(2)+' | Combined Reject: '+totalRej.toFixed(2)+' KL<br>';
+    if(rrFeed>0)h+='\u2022 Reject RO: Feed '+rrFeed.toFixed(2)+' KL \u2192 Recovery '+rrRecov.toFixed(2)+' KL (60%) | Final Drain '+rrFinalRej.toFixed(2)+' KL<br>';
+    if(bwRecov>0)h+='\u2022 Backwash Recovery: '+bwRecov.toFixed(2)+' KL<br>';
+    if(tnkCount>0)h+='\u2022 Tankers: '+tnkCount+' \u00D7 10 KL = '+tnkKL+' KL<br>';
+    h+='\u2022 Total Waste to Drain: '+actualWaste.toFixed(2)+' KL | Unaccounted: '+Math.max(0,unacc).toFixed(2)+' KL ('+unaccPct+'%)';
+    if(parseFloat(unaccPct)>40)h+=' \u26A0\uFE0F High \u2014 check for leaks or unmeasured usage';
+    ins.innerHTML=h;ins.style.display='block';
+  }else{ins.style.display='none';}
+}
+
+function saveWUR(){
+  const dt=document.getElementById('wurDate').value;
+  const d={date:dt,sources:{},ro1:{},ro2:{},rejectRO:{},backwash:{},tankStart:0,tankEnd:0,skuCases:{},tankerCount:parseInt(document.getElementById('wTankerCount').value)||0};
+  ['bw1','bw2','bw3','tmc'].forEach(s=>{d.sources[s+'O']=parseFloat(document.querySelector('.ws[data-s="'+s+'"]').value)||0;d.sources[s+'C']=parseFloat(document.querySelector('.wsc[data-s="'+s+'"]').value)||0;});
+  d.tankStart=parseFloat(document.getElementById('wTankStart').value)||0;
+  d.tankEnd=parseFloat(document.getElementById('wTankEnd').value)||0;
+  d.ro1={feedO:parseFloat(document.getElementById('ro1FO').value)||0,feedC:parseFloat(document.getElementById('ro1FC').value)||0};
+  d.ro2={feedO:parseFloat(document.getElementById('ro2FO').value)||0,feedC:parseFloat(document.getElementById('ro2FC').value)||0};
+  d.rejectRO={feedO:parseFloat(document.getElementById('rrFO').value)||0,feedC:parseFloat(document.getElementById('rrFC').value)||0};
+  d.backwash={startR:parseFloat(document.getElementById('bwO').value)||0,stopR:parseFloat(document.getElementById('bwC').value)||0};
+  document.querySelectorAll('.wp').forEach(i=>{d.skuCases[i.dataset.sku]=parseInt(i.value)||0;});
+  d.actualWUR=document.getElementById('wrActual').textContent;
+  d.user=currentUser.user;d.timestamp=new Date().toISOString();
+  localStorage.setItem('sa_wur_'+dt,JSON.stringify(d));
+  sendToSheets('wur',d);toast('WUR for '+dt+' saved!','success');
+}
+
+function downloadWURPDF(){
+  var dt=document.getElementById('wurDate').value;
+  var insEl=document.getElementById('wurInsights');
+  var ins=insEl?insEl.innerHTML:'No data.';
+  var tnkC=document.getElementById('wTankerCount').value||'0';
+  
+  // Source rows
+  var srcR='';
+  var srcs=[{i:'bw1',n:'Borewell 1'},{i:'bw2',n:'Borewell 2'},{i:'bw3',n:'Borewell 3'},{i:'tmc',n:'TMC/Municipal'},{i:'tanker',n:'Tanker ('+tnkC+' x 10KL)'}];
+  srcs.forEach(function(s){srcR+='<tr><td>'+s.n+'</td><td style="text-align:right">'+document.getElementById('wc_'+s.i).textContent+' KL</td></tr>';});
+  
+  // Production rows
+  var pR='';
+  SKUS.forEach(function(s){var c=document.querySelector('.wp[data-sku="'+s+'"]');var v=document.getElementById('wpw_'+s);if(c&&parseInt(c.value)>0)pR+='<tr><td>'+s+'</td><td style="text-align:right">'+c.value+'</td><td style="text-align:right">'+v.textContent+' KL</td></tr>';});
+  
+  // Get values
+  var vDrawn=document.getElementById('wrDrawn').textContent;
+  var vNet=document.getElementById('wrNet').textContent;
+  var vProd=document.getElementById('wrProd').textContent;
+  var vActual=document.getElementById('wrActual').textContent;
+  var vGap=document.getElementById('wrGap').textContent;
+  var vStatus=document.getElementById('wrStatus').textContent;
+  var vTotalDrawn=document.getElementById('wTotalDrawn').textContent;
+  var vRo1=document.getElementById('ro1Feed').value+' / '+document.getElementById('ro1Perm').value+' / '+document.getElementById('ro1Rej').value;
+  var vRo2=document.getElementById('ro2Feed').value+' / '+document.getElementById('ro2Perm').value+' / '+document.getElementById('ro2Rej').value;
+  var vRoComb=document.getElementById('roTotalFeed').textContent+' / '+document.getElementById('roTotalPerm').textContent+' / '+document.getElementById('roTotalRej').textContent;
+  var vRR=document.getElementById('rrFeed').value+' / '+document.getElementById('rrRecov').value+' / '+document.getElementById('rrFinalRej').value;
+  var vBW=document.getElementById('bwRecov').value;
+  var vWaste=document.getElementById('recWaste').textContent;
+  var vCases=document.getElementById('wTotalCases').textContent;
+  var vProdW=document.getElementById('wTotalProdW').textContent;
+  var vUnacc=document.getElementById('wrUnacc').textContent;
+  var vUnaccPct=document.getElementById('wrUnaccPct').textContent;
+  var now=new Date().toLocaleString('en-IN');
+  
+  var h='<html><head><title>'+dt+'-WUR</title>';
+  h+='<style>body{font-family:Arial,sans-serif;padding:30px;color:#1a1d2e;max-width:800px;margin:0 auto}';
+  h+='h1{font-size:20px;color:#e8520a;border-bottom:3px solid #e8520a;padding-bottom:8px}';
+  h+='h2{font-size:14px;margin:16px 0 8px;background:#f0f2f8;padding:8px 12px;border-radius:6px}';
+  h+='table{width:100%;border-collapse:collapse;margin:6px 0 12px}th,td{padding:5px 8px;border:1px solid #d5dbe8;font-size:11px}';
+  h+='th{background:#f0f2f8;font-weight:600;text-align:left}';
+  h+='.res{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.rb{flex:1;min-width:80px;background:#f0f2f8;border-radius:8px;padding:8px;text-align:center}';
+  h+='.rb .l{font-size:8px;color:#5a6178;text-transform:uppercase}.rb .v{font-size:16px;font-weight:700;margin-top:2px}';
+  h+='.ins{background:#f0f2f8;border-radius:8px;padding:12px;font-size:10px;line-height:1.6;margin:10px 0}';
+  h+='.ft{margin-top:16px;font-size:8px;color:#8e95a9;text-align:center;border-top:1px solid #d5dbe8;padding-top:6px}';
+  h+='@media print{body{padding:10px}}</style></head><body>';
+  h+='<h1>Water Usage Ratio Report</h1>';
+  h+='<p style="font-size:11px;color:#5a6178">Aambika Foods & Beverages LLP | Plant Day: <strong>'+dt+'</strong> (7AM→7AM) | Generated: '+now+'</p>';
+  h+='<div class="res">';
+  h+='<div class="rb"><div class="l">Water Drawn</div><div class="v" style="color:#3b82f6">'+vDrawn+'</div></div>';
+  h+='<div class="rb"><div class="l">Net Consumed</div><div class="v" style="color:#8b5cf6">'+vNet+'</div></div>';
+  h+='<div class="rb"><div class="l">Product Water</div><div class="v" style="color:#10b981">'+vProd+'</div></div>';
+  h+='<div class="rb"><div class="l">Actual WUR</div><div class="v" style="color:#e8520a">'+vActual+' L/L</div></div>';
+  h+='<div class="rb"><div class="l">Theoretical</div><div class="v" style="color:#10b981">1.03</div></div>';
+  h+='<div class="rb"><div class="l">Gap</div><div class="v" style="color:#ef4444">'+vGap+'</div></div>';
+  h+='<div class="rb"><div class="l">Status</div><div class="v">'+vStatus+'</div></div>';
+  h+='</div>';
+  h+='<h2>Water Sources</h2><table><thead><tr><th>Source</th><th style="text-align:right">Consumed (KL)</th></tr></thead><tbody>'+srcR;
+  h+='<tr style="font-weight:700;background:#f0f2f8"><td>TOTAL DRAWN</td><td style="text-align:right">'+vTotalDrawn+'</td></tr></tbody></table>';
+  h+='<h2>RO Plant</h2><table><tbody>';
+  h+='<tr><td>RO1 Feed / Permeate / Reject</td><td style="text-align:right">'+vRo1+' KL</td></tr>';
+  h+='<tr><td>RO2 Feed / Permeate / Reject</td><td style="text-align:right">'+vRo2+' KL</td></tr>';
+  h+='<tr style="font-weight:700"><td>Combined</td><td style="text-align:right">'+vRoComb+'</td></tr>';
+  h+='<tr><td>Reject RO: Feed / Recovery (60%) / Final Reject</td><td style="text-align:right">'+vRR+' KL</td></tr>';
+  h+='<tr><td>Backwash Recovery</td><td style="text-align:right">'+vBW+' KL</td></tr>';
+  h+='<tr style="color:#ef4444;font-weight:700"><td>Total Waste to Drain</td><td style="text-align:right">'+vWaste+'</td></tr>';
+  h+='</tbody></table>';
+  h+='<h2>Production</h2><table><thead><tr><th>SKU</th><th style="text-align:right">Cases</th><th style="text-align:right">Product Water</th></tr></thead><tbody>'+pR;
+  h+='<tr style="font-weight:700;background:#f0f2f8"><td>TOTAL</td><td style="text-align:right">'+vCases+'</td><td style="text-align:right">'+vProdW+'</td></tr></tbody></table>';
+  h+='<h2>Unaccounted</h2><table><tbody><tr><td>Unaccounted Water</td><td style="text-align:right">'+vUnacc+'</td></tr>';
+  h+='<tr><td>Unaccounted %</td><td style="text-align:right">'+vUnaccPct+'</td></tr></tbody></table>';
+  h+='<div class="ins">'+ins+'</div>';
+  h+='<div class="ft">Confidential — Aambika Foods & Beverages LLP — Plant Management System</div>';
+  h+='</body></html>';
+  
+  var w=window.open('','_blank');
+  if(w){w.document.write(h);w.document.close();setTimeout(function(){w.document.title=dt+'-WUR';w.print();},500);}
+  else{toast('Please allow popups to download PDF','error');}
+}
+
+
+// ==================== P&L ====================
+function initPL(){
+  pullPLData();
+}
+
+function pullPLData(){
+  // Pull Revenue (with incentive) from Revenue tab
+  const rev=getRevenueTotals();
+  document.getElementById('plRevAmt').textContent='₹'+rev.withIncentive.toLocaleString('en-IN');
+  
+  // Pull Expenses from CPC (current month)
+  const month=document.getElementById('plMonth').value;
+  const cpcData=JSON.parse(localStorage.getItem('sa_cpc_'+month)||'{}');
+  
+  const expBody=document.getElementById('plExpBody');
+  let expRows='';
+  
+  // Fixed costs from CPC
+  if(cpcData.fixed){
+    Object.entries(cpcData.fixed).forEach(([head,amt])=>{
+      if(amt>0)expRows+=`<tr><td>${head}</td><td class="mono" style="text-align:right">₹${amt.toLocaleString('en-IN')}</td><td style="text-align:center"><span class="badge badge-blue">Fixed</span></td></tr>`;
+    });
+  }else{
+    FIXED_COSTS.forEach(h=>{expRows+=`<tr><td>${h}</td><td class="mono" style="text-align:right;color:var(--text3)">₹0</td><td style="text-align:center"><span class="badge badge-blue">Fixed</span></td></tr>`});
+  }
+  
+  // Variable costs from CPC
+  if(cpcData.variable){
+    Object.entries(cpcData.variable).forEach(([head,amt])=>{
+      if(amt>0)expRows+=`<tr><td>${head}</td><td class="mono" style="text-align:right">₹${amt.toLocaleString('en-IN')}</td><td style="text-align:center"><span class="badge badge-orange">Variable</span></td></tr>`;
+    });
+  }else{
+    VAR_COSTS.forEach(v=>{expRows+=`<tr><td>${v.name}</td><td class="mono" style="text-align:right;color:var(--text3)">₹0</td><td style="text-align:center"><span class="badge badge-orange">Variable</span></td></tr>`});
+  }
+  
+  expBody.innerHTML=expRows;
+  
+  if(cpcData.totalCost||rev.withIncentive)toast('P&L data pulled from Revenue & CPC','success');
+  calcPL();
+}
+
+function calcPL(){
+  // Income = Revenue (with incentive) + manual entries
+  const revText=document.getElementById('plRevAmt').textContent.replace(/[₹,]/g,'');
+  const revAmt=parseFloat(revText)||0;
+  let manualInc=0;
+  document.querySelectorAll('.pl-inc-manual').forEach(i=>{manualInc+=parseFloat(i.value)||0});
+  const totalInc=revAmt+manualInc;
+  
+  // Expenses = all from CPC
+  const month=document.getElementById('plMonth').value;
+  const cpcData=JSON.parse(localStorage.getItem('sa_cpc_'+month)||'{}');
+  const totalExp=(cpcData.totalCost)||0;
+  
+  // If no CPC data, try summing from the displayed table
+  let displayedExp=0;
+  document.querySelectorAll('#plExpBody td.mono').forEach(td=>{
+    const val=parseFloat(td.textContent.replace(/[₹,]/g,''))||0;
+    displayedExp+=val;
+  });
+  const finalExp=totalExp||displayedExp;
+  
+  const net=totalInc-finalExp;
+  const margin=totalInc>0?((net/totalInc)*100).toFixed(1):0;
+  
+  document.getElementById('plIncTotal').textContent='₹'+totalInc.toLocaleString('en-IN');
+  document.getElementById('plExpTotal').textContent='₹'+finalExp.toLocaleString('en-IN');
+  document.getElementById('plIncSum').textContent='₹'+totalInc.toLocaleString('en-IN');
+  document.getElementById('plExpSum').textContent='₹'+finalExp.toLocaleString('en-IN');
+  document.getElementById('plNet').textContent=(net>=0?'':'−')+'₹'+Math.abs(net).toLocaleString('en-IN');
+  document.getElementById('plNet').style.color=net>=0?'var(--green)':'var(--red)';
+  document.getElementById('plMargin').textContent=margin+'%';
+  document.getElementById('plMargin').style.color=net>=0?'var(--green)':'var(--red)';
+}
+
+function savePL(){
+  const month=document.getElementById('plMonth').value;
+  const rev=getRevenueTotals();
+  const cpcData=JSON.parse(localStorage.getItem('sa_cpc_'+month)||'{}');
+  
+  let manualInc={};
+  document.querySelectorAll('.pl-inc-manual').forEach(i=>{manualInc[i.dataset.head]=parseFloat(i.value)||0});
+  
+  const totalInc=rev.withIncentive+Object.values(manualInc).reduce((s,v)=>s+v,0);
+  const totalExp=cpcData.totalCost||0;
+  
+  const entry={
+    month,
+    status:document.getElementById('plStatus').value,
+    income:{
+      conversionRevenue:rev.withIncentive,
+      revenueWithoutIncentive:rev.withoutIncentive,
+      ...manualInc
+    },
+    expense:{
+      fixed:cpcData.fixed||{},
+      variable:cpcData.variable||{},
+      fixedTotal:cpcData.fixedTotal||0,
+      varTotal:cpcData.varTotal||0,
+      totalExpense:totalExp
+    },
+    totalIncome:totalInc,
+    totalExpense:totalExp,
+    netPL:totalInc-totalExp,
+    margin:totalInc>0?(((totalInc-totalExp)/totalInc)*100).toFixed(1):0,
+    user:currentUser.user,
+    timestamp:new Date().toISOString()
+  };
+  
+  const all=JSON.parse(localStorage.getItem('sa_pl')||'[]');
+  const existIdx=all.findIndex(x=>x.month===month);
+  if(existIdx>=0)all[existIdx]=entry;else all.push(entry);
+  localStorage.setItem('sa_pl',JSON.stringify(all));
+  sendToSheets('pl',entry);
+  toast('P&L for '+month+' saved!','success');
+}
+
+// ==================== USER MANAGEMENT ====================
+function initUserTable(){
+  const users=getUsers();
+  const tbody=document.getElementById('usersBody');
+  tbody.innerHTML=users.map((u,i)=>`<tr><td class="bold">${u.user}</td><td><span class="badge ${u.role==='admin'?'badge-red':u.role==='accounts'?'badge-green':'badge-orange'}">${u.role}</span></td><td>${u.user==='admin'?'—':`<button class="logout-btn" onclick="removeUser(${i})">Remove</button>`}</td></tr>`).join('');
+}
+function addUser(){
+  const u=document.getElementById('newUser').value.trim();
+  const p=document.getElementById('newPass').value.trim();
+  const r=document.getElementById('newRole').value;
+  if(!u||!p){toast('Enter username and password','error');return}
+  const users=getUsers();
+  if(users.find(x=>x.user===u)){toast('Username already exists','error');return}
+  users.push({user:u,pass:p,role:r});
+  saveUsers(users);initUserTable();
+  document.getElementById('newUser').value='';document.getElementById('newPass').value='';
+  toast('User added!','success');
+}
+function removeUser(i){
+  const users=getUsers();
+  if(users[i].user==='admin'){toast('Cannot remove admin','error');return}
+  users.splice(i,1);saveUsers(users);initUserTable();toast('User removed','success');
+}
+
+// ==================== SEND TO SHEETS ====================
+async function sendToSheets(type,data){
+  if(SCRIPT_URL==='YOUR_SEMI_ADMIN_SCRIPT_URL_HERE')return;
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type,data})});
+  }catch(e){console.log('Sheets sync error:',e)}
+}
+
+// ==================== TOAST ====================
+function toast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ==================== AUTO LOGIN CHECK ====================
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=localStorage.getItem('sa_current_user');
+  if(saved){try{currentUser=JSON.parse(saved);showApp()}catch(e){}}
+});
+</script>
+</body>
+</html>
